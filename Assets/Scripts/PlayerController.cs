@@ -14,6 +14,8 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField]
     private Grid mapGrid; // マップグリッド
+    [SerializeField]
+    private GameDifficulityController difficulityController; // 移動回数上限取得用
 
     private int moveCount; // 移動した回数を保存する変数
 
@@ -32,19 +34,21 @@ public class PlayerController : MonoBehaviour
         moveDistance = new Vector2(mapGrid.cellSize.x, mapGrid.cellSize.y);
     }
 
+    // Update is called once per frame
     private void Update()
     {
         // なにもないときは待機状態にする
         playerCondition = PlayerCondition.Wait;
-
-        Debug.Log(moveCount);
     }
 
-    // Update is called once per frame
     private void FixedUpdate()
     {
-        // プレイヤーの移動処理
-        PlayerMoveProcess();
+        // 移動回数が移動上限を超えていないなら
+        if (moveCount < difficulityController.GetMoveLimit(0))
+        {
+            // プレイヤーの移動処理を行う
+            PlayerMoveProcess();
+        }
     }
 
     // プレイヤーの移動処理
@@ -57,9 +61,9 @@ public class PlayerController : MonoBehaviour
         if (oldFrameKeyInput == false && ArrowKeyInput())
         {
             oldPosition = transform.position; // 現在の位置を保存する
+            playerCondition = PlayerCondition.Move; // 移動状態に移行
             transform.position += arrowKeyInput; // 移動する
             moveCount++; // 移動回数を増やす
-            playerCondition = PlayerCondition.Move; // 移動状態に移行
         }
         oldFrameKeyInput = ArrowKeyInput(); // 今フレームのキー入力情報を保存
     }
