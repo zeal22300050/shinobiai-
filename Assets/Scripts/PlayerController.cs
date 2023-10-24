@@ -4,6 +4,14 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    // プレイヤーの状態
+    private enum PlayerCondition
+    {
+        Wait,
+        Move
+    }
+    private PlayerCondition playerCondition;
+
     [SerializeField]
     private Grid mapGrid; // マップグリッド
 
@@ -24,8 +32,23 @@ public class PlayerController : MonoBehaviour
         moveDistance = new Vector2(mapGrid.cellSize.x, mapGrid.cellSize.y);
     }
 
+    private void Update()
+    {
+        // なにもないときは待機状態にする
+        playerCondition = PlayerCondition.Wait;
+
+        Debug.Log(moveCount);
+    }
+
     // Update is called once per frame
     private void FixedUpdate()
+    {
+        // プレイヤーの移動処理
+        PlayerMoveProcess();
+    }
+
+    // プレイヤーの移動処理
+    private void PlayerMoveProcess()
     {
         // 矢印キーの入力を取得
         arrowKeyInput = new Vector3(Input.GetAxisRaw("Horizontal") * moveDistance.x, Input.GetAxisRaw("Vertical") * moveDistance.y, 0);
@@ -36,8 +59,9 @@ public class PlayerController : MonoBehaviour
             oldPosition = transform.position; // 現在の位置を保存する
             transform.position += arrowKeyInput; // 移動する
             moveCount++; // 移動回数を増やす
+            playerCondition = PlayerCondition.Move; // 移動状態に移行
         }
-        oldFrameKeyInput = ArrowKeyInput(); // 今フレームのキー入力を保存
+        oldFrameKeyInput = ArrowKeyInput(); // 今フレームのキー入力情報を保存
     }
 
     // 矢印キーが押されているかどうかを返す関数
@@ -49,11 +73,11 @@ public class PlayerController : MonoBehaviour
             Input.GetKey(KeyCode.UpArrow) || 
             Input.GetKey(KeyCode.DownArrow))
         {
-            return true; // true
+            return true;
         }
         else // そうでなければ
         {
-            return false; // false
+            return false;
         }
     }
 
@@ -62,11 +86,20 @@ public class PlayerController : MonoBehaviour
     {
         // コリジョンが衝突したら、保存された位置に戻る
         transform.position = oldPosition;
+
+        // 壁に当たって動けなかったときは移動回数を増やさない
+        moveCount--;
     }
 
-    // 現在の移動回数を取得する関数
+    // 現在の移動回数を返す関数
     public int GetCurrentMoveCount()
     {
         return moveCount;
+    }
+
+    // プレイヤーの状態を返す関数
+    public int GetPlayerCondition()
+    {
+        return (int)playerCondition;
     }
 }
