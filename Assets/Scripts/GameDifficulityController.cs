@@ -17,21 +17,11 @@ public class GameDifficulityController : MonoBehaviour
     /// <summary>
     /// ステージごとの移動回数上限を保存する変数
     /// </summary>
-    private Dictionary<StageName, int> moveLimit = new Dictionary<StageName, int>(){
+    private readonly Dictionary<StageName, int> moveLimit = new(){
         {StageName.Stage1, 10},
         {StageName.Stage2, 8},
         {StageName.Stage3, 6},
     };
-
-    // Start is called before the first frame update
-    void Start()
-    {
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-    }
 
     /// <summary>
     /// 受け取った番号に対応したステージの移動回数上限を取得する

@@ -24,7 +24,7 @@ public class GaugeController : MonoBehaviour
     {
         slider.value = DefaultSliderValue; // 初期状態ではゲージを満タンにしておく
         moveLimitCount = difficulityController.GetMoveLimit(0); // 移動回数の上限を取得する
-        decreaseGauge = 1 / (float)moveLimitCount; // 一回の移動で減るゲージの量を設定
+        decreaseGauge = DefaultSliderValue / (float)moveLimitCount; // 一回の移動で減るゲージの量を設定
     }
 
     // Update is called once per frame

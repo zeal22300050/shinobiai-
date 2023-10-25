@@ -4,13 +4,24 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    // プレイヤーの状態
+    /// <summary>
+    /// プレイヤーの状態
+    /// </summary>
     private enum PlayerCondition
     {
         Wait,
         Move
     }
     private PlayerCondition playerCondition;
+
+    /// <summary>
+    /// ステージの進行状況
+    /// </summary>
+    private enum CompareResult
+    {
+        Defferrent,
+        Same
+    }
 
     [SerializeField]
     private Grid mapGrid; // マップグリッド
@@ -22,23 +33,15 @@ public class PlayerController : MonoBehaviour
     private Vector2 moveDistance; // 一度に移動する距離
     private Vector3 arrowKeyInput; // 矢印キーの入力を取得する変数
 
-    private Vector3 oldPosition; // 前フレームの位置を保存する変数
+    private readonly List<Vector3> oldPosition = new(); // 過去の位置を保存する配列
+    private int oldPositionIndex; // 任意の保存済み位置にアクセスするための変数
     private bool oldFrameKeyInput; // 前フレームのキー入力を保存するフラグ
 
     // Start is called before the first frame update
     private void Start()
     {
-        // 最初は初期位置を保存
-        oldPosition = transform.position;
         // 一回の移動距離をセルサイズに合わせる
         moveDistance = new Vector2(mapGrid.cellSize.x, mapGrid.cellSize.y);
-    }
-
-    // Update is called once per frame
-    private void Update()
-    {
-        // なにもないときは待機状態にする
-        playerCondition = PlayerCondition.Wait;
     }
 
     private void FixedUpdate()
@@ -51,7 +54,9 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // プレイヤーの移動処理
+    /// <summary>
+    /// プレイヤーの移動処理
+    /// </summary>
     private void PlayerMoveProcess()
     {
         // 矢印キーの入力を取得
@@ -60,15 +65,33 @@ public class PlayerController : MonoBehaviour
         // 前フレームでキーが押されていないかつ今フレームでキーが押されていたら
         if (oldFrameKeyInput == false && ArrowKeyInput())
         {
-            oldPosition = transform.position; // 現在の位置を保存する
             playerCondition = PlayerCondition.Move; // 移動状態に移行
+            oldPosition.Add(transform.position); // 現在の位置を保存する
             transform.position += arrowKeyInput; // 移動する
-            moveCount++; // 移動回数を増やす
+
+            // 現在位置と保存済み位置が一致しなかったなら
+            if (ComparePosition() == CompareResult.Defferrent)
+            {
+                moveCount++; // 移動回数を増やす
+            }
+
+        }
+        else
+        {
+            // なにもないときは待機状態にする
+            //playerCondition = PlayerCondition.Wait;
         }
         oldFrameKeyInput = ArrowKeyInput(); // 今フレームのキー入力情報を保存
+
     }
 
-    // 矢印キーが押されているかどうかを返す関数
+    /// <summary>
+    /// 矢印キーの入力を確認する関数
+    /// </summary>
+    /// <returns> 
+    /// 入力中 : true 
+    /// 未入力 : false
+    /// </returns>
     private bool ArrowKeyInput()
     {
         // 矢印キーのいずれかが押されたなら
@@ -85,23 +108,66 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 現在の位置と保存済みの位置を比べて一致か不一致かを返す関数
+    /// </summary>
+    /// <returns>
+    /// 何も保存されていないか保存済み位置と現在位置が不一致だった : Defferrent
+    /// 保存済み位置と現在位置が一致した : Same
+    /// </returns>
+    private CompareResult ComparePosition()
+    {
+        // oldPositionに何も保存されていないなら
+        if (oldPosition == null)
+        {
+            // Defferrentを返す
+            return CompareResult.Defferrent;
+        }
+
+        // oldPositionの配列サイズまでループする
+        for (oldPositionIndex = 0; oldPositionIndex < oldPosition.Count; oldPositionIndex++)
+        {
+            // 現在位置が保存済の位置と一致していたら
+            if (transform.position == oldPosition[oldPositionIndex])
+            {
+                // Sameを返す
+                return CompareResult.Same;
+            }
+        }       
+
+        // 上記の条件に当たらなければDefferrentを返す
+        return CompareResult.Defferrent;
+    }
+
     // 衝突応答処理
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // コリジョンが衝突したら、保存された位置に戻る
-        transform.position = oldPosition;
+        // 配列の添字を決定する
+        ComparePosition();
+        // 保存された位置に戻る
+        transform.position = oldPosition[--oldPositionIndex];
 
         // 壁に当たって動けなかったときは移動回数を増やさない
         moveCount--;
     }
 
-    // 現在の移動回数を返す関数
+    /// <summary>
+    /// 現在の移動回数を返す関数
+    /// </summary>
+    /// <returns>
+    /// 移動回数
+    /// </returns>
     public int GetCurrentMoveCount()
     {
         return moveCount;
     }
 
-    // プレイヤーの状態を返す関数
+    /// <summary>
+    /// プレイヤーの状態を返す関数
+    /// </summary>
+    /// <returns>
+    /// 現在のプレイヤーの状態
+    /// </returns>
     public int GetPlayerCondition()
     {
         return (int)playerCondition;
