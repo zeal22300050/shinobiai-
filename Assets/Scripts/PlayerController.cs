@@ -82,7 +82,7 @@ public class PlayerController : MonoBehaviour
             if (ComparePosition() == CompareResult.Defferrent)
             {
                 moveCount++; // 移動回数を増やす
-                Instantiate(spriteMask, transform.position, Quaternion.identity); // 足場を出す
+                Instantiate(spriteMask, transform.position, Quaternion.identity); // 足場を表示する
             }
         }
         else
@@ -153,7 +153,6 @@ public class PlayerController : MonoBehaviour
     {
         // 一手前に保存された位置に戻る
         transform.position = oldPosition[--oldPositionIndex];
-
         // 壁に当たって動けなかったときは移動回数を増やさない
         moveCount--;
     }
