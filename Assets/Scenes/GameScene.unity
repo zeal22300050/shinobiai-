@@ -367,7 +367,7 @@ GameObject:
   - component: {fileID: 593007074}
   - component: {fileID: 593007075}
   m_Layer: 0
-  m_Name: GameDifficulityController
+  m_Name: GameController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -596,7 +596,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mapGrid: {fileID: 910133630}
-  difficulityController: {fileID: 593007075}
+  gameController: {fileID: 593007075}
   spriteMask: {fileID: 3046459893154276856, guid: 7a8f439806fa1fd43a6b77cd52256893, type: 3}
 --- !u!50 &1030537878
 Rigidbody2D:
@@ -1139,6 +1139,7 @@ GameObject:
   - component: {fileID: 1373846964}
   - component: {fileID: 1373846966}
   - component: {fileID: 1373846965}
+  - component: {fileID: 1373846967}
   m_Layer: 0
   m_Name: GoalTile
   m_TagString: Goal
@@ -1201,7 +1202,7 @@ TilemapRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 2
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0.5, y: 0.5, z: 0}
   m_MaxChunkCount: 16
@@ -1282,6 +1283,42 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!19719996 &1373846967
+TilemapCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1373846963}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_MaximumTileChangeCount: 1000
+  m_ExtrusionFactor: 0
+  m_UseDelaunayMesh: 0
 --- !u!1 &1441842054
 GameObject:
   m_ObjectHideFlags: 0
@@ -2145,7 +2182,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slider: {fileID: 1742119695}
   playerController: {fileID: 1030537877}
-  difficulityController: {fileID: 593007075}
+  gameController: {fileID: 593007075}
 --- !u!1 &1761521816
 GameObject:
   m_ObjectHideFlags: 0

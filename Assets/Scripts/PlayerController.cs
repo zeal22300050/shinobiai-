@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static GameController;
 
 public class PlayerController : MonoBehaviour
 {
@@ -12,6 +13,9 @@ public class PlayerController : MonoBehaviour
         Wait,
         Move
     }
+    /// <summary>
+    /// プレイヤーの状態
+    /// </summary>
     private PlayerCondition playerCondition;
 
     /// <summary>
@@ -31,17 +35,20 @@ public class PlayerController : MonoBehaviour
     /// ステージ情報取得用
     /// </summary>
     [SerializeField]
-    private GameDifficulityController difficulityController; 
+    private GameController gameController; 
     /// <summary>
     /// 足場表示用スプライトマスク
     /// </summary>
     [SerializeField]
-    private GameObject spriteMask; 
+    private GameObject spriteMask;
 
-    private int moveCount; // 移動した回数を保存する変数
+    private readonly List<GameObject> maskObject = new(); // スプライトマスクを保存しておく配列
 
+    private Vector3 defaultPosition; // 初期位置
     private Vector2 moveDistance; // 一度に移動する距離
     private Vector3 arrowKeyInput; // 矢印キーの入力を取得する変数
+
+    private int moveCount; // 移動した回数を保存する変数
 
     private readonly List<Vector3> oldPosition = new(); // 過去の位置を保存する配列
     private int oldPositionIndex; // 任意の保存済み位置にアクセスするための変数
@@ -50,18 +57,61 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
+        defaultPosition = transform.position;
         // 一回の移動距離をセルサイズに合わせる
         moveDistance = new Vector2(mapGrid.cellSize.x, mapGrid.cellSize.y);
     }
 
+    private void Update()
+    {
+        // リセットボタン処理
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            // 現在位置の初期化
+            transform.position = defaultPosition;
+            // 移動回数の初期化
+            moveCount = 0;
+            // 配列がNULLならこれ以降の処理を行わない
+            if (oldPosition == null || maskObject == null)
+            {
+                return;
+            }
+            // maskオブジェクトをすべて削除する
+            for (int i = 0; i < maskObject.Count; i++)
+            {
+                Destroy(maskObject[i]);
+            }
+            // 保存された位置を削除する
+            oldPosition.Clear();
+            // 保存されたオブジェクト情報を削除する
+            maskObject.Clear();
+            // ゲーム進行状況をゲームスタート時に戻す
+            gameController.StartInGame();
+        }
+    }
+
     private void FixedUpdate()
     {
-        // 移動回数が移動上限を超えていないなら
-        if (moveCount < difficulityController.GetMoveLimit(0))
+        // ゲームの進行状況を取得して
+        switch (gameController.GetGameProgress())
         {
-            // プレイヤーの移動処理を行う
-            PlayerMoveProcess();
+            // GoalまたはGameOverならこれ以降の処理を行わない
+            case GameProgress.Goal: return;
+            case GameProgress.GameOver: return;
+            
+            // 上記以外ならそのまま抜ける
+            default: break;
         }
+
+        // 移動回数が移動上限を超えたら
+        if (moveCount > gameController.GetMoveLimit(StageName.Stage1))
+        {
+            // ゲームオーバー処理を呼び出す
+            gameController.GameOver();
+            return; // これ以降の処理を行わない
+        }
+        // プレイヤーの移動処理を行う
+        PlayerMoveProcess();
     }
 
     /// <summary>
@@ -82,7 +132,7 @@ public class PlayerController : MonoBehaviour
             if (ComparePosition() == CompareResult.Defferrent)
             {
                 moveCount++; // 移動回数を増やす
-                Instantiate(spriteMask, transform.position, Quaternion.identity); // 足場を表示する
+                maskObject.Add(Instantiate(spriteMask, transform.position, Quaternion.identity)); // 足場を表示する
             }
         }
         else
@@ -146,7 +196,7 @@ public class PlayerController : MonoBehaviour
 
         // 上記の条件に当たらなければDefferrentを返す
         return CompareResult.Defferrent;
-    }
+    } 
 
     // 衝突応答処理
     private void OnCollisionEnter2D(Collision2D collision)
@@ -156,7 +206,11 @@ public class PlayerController : MonoBehaviour
         // 壁に当たって動けなかったときは移動回数を増やさない
         moveCount--;
     }
-
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        // ゴール関数を呼び出す
+        gameController.Goal();
+    }
     /// <summary>
     /// 現在の移動回数を返す関数
     /// </summary>

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using static GameController;
 
 public class GaugeController : MonoBehaviour
 {
@@ -11,7 +12,7 @@ public class GaugeController : MonoBehaviour
     [SerializeField]
     private PlayerController playerController;
     [SerializeField]
-    private GameDifficulityController difficulityController;
+    private GameController gameController;
 
     // スライダーの初期の大きさ
     private const float DefaultSliderValue = 1;
@@ -23,7 +24,7 @@ public class GaugeController : MonoBehaviour
     void Start()
     {
         slider.value = DefaultSliderValue; // 初期状態ではゲージを満タンにしておく
-        moveLimitCount = difficulityController.GetMoveLimit(0); // 移動回数の上限を取得する
+        moveLimitCount = gameController.GetMoveLimit(StageName.Stage1); // 移動回数の上限を取得する
         decreaseGauge = DefaultSliderValue / (float)moveLimitCount; // 一回の移動で減るゲージの量を設定
     }
 
