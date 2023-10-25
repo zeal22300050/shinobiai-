@@ -68,13 +68,11 @@ public class PlayerController : MonoBehaviour
             playerCondition = PlayerCondition.Move; // 移動状態に移行
             oldPosition.Add(transform.position); // 現在の位置を保存する
             transform.position += arrowKeyInput; // 移動する
-
             // 現在位置と保存済み位置が一致しなかったなら
             if (ComparePosition() == CompareResult.Defferrent)
             {
                 moveCount++; // 移動回数を増やす
             }
-
         }
         else
         {
@@ -142,9 +140,7 @@ public class PlayerController : MonoBehaviour
     // 衝突応答処理
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        // 配列の添字を決定する
-        ComparePosition();
-        // 保存された位置に戻る
+        // 一手前に保存された位置に戻る
         transform.position = oldPosition[--oldPositionIndex];
 
         // 壁に当たって動けなかったときは移動回数を増やさない
