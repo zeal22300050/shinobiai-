@@ -15,18 +15,28 @@ public class PlayerController : MonoBehaviour
     private PlayerCondition playerCondition;
 
     /// <summary>
-    /// ステージの進行状況
+    /// 比較結果
     /// </summary>
     private enum CompareResult
     {
         Defferrent,
         Same
     }
-
+    /// <summary>
+    /// マップグリッドの大きさ取得用
+    /// </summary>
     [SerializeField]
-    private Grid mapGrid; // マップグリッド
+    private Grid mapGrid;
+    /// <summary>
+    /// ステージ情報取得用
+    /// </summary>
     [SerializeField]
-    private GameDifficulityController difficulityController; // 移動回数上限取得用
+    private GameDifficulityController difficulityController; 
+    /// <summary>
+    /// 足場表示用スプライトマスク
+    /// </summary>
+    [SerializeField]
+    private GameObject spriteMask; 
 
     private int moveCount; // 移動した回数を保存する変数
 
@@ -72,6 +82,7 @@ public class PlayerController : MonoBehaviour
             if (ComparePosition() == CompareResult.Defferrent)
             {
                 moveCount++; // 移動回数を増やす
+                Instantiate(spriteMask, transform.position, Quaternion.identity); // 足場を出す
             }
         }
         else
