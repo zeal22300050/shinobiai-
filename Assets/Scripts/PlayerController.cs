@@ -92,26 +92,17 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // ゲームの進行状況を取得して
-        switch (gameController.GetGameProgress())
+        if (gameController.GetGameProgress() == GameProgress.Goal)
         {
-            // GoalまたはGameOverならこれ以降の処理を行わない
-            case GameProgress.Goal: return;
-            case GameProgress.GameOver: return;
-            
-            // 上記以外ならそのまま抜ける
-            default: break;
+            return; // これ以降の処理を行わない
         }
 
         // 移動回数が移動上限を超えたら
-        if (moveCount > gameController.GetMoveLimit(StageName.Stage1))
+        if (moveCount < gameController.GetMoveLimit(StageName.Stage1))
         {
-            // ゲームオーバー処理を呼び出す
-            gameController.GameOver();
-            return; // これ以降の処理を行わない
+            // プレイヤーの移動処理を行う
+            PlayerMoveProcess();
         }
-        // プレイヤーの移動処理を行う
-        PlayerMoveProcess();
     }
 
     /// <summary>
@@ -138,7 +129,7 @@ public class PlayerController : MonoBehaviour
         else
         {
             // なにもないときは待機状態にする
-            //playerCondition = PlayerCondition.Wait;
+            playerCondition = PlayerCondition.Wait;
         }
         oldFrameKeyInput = ArrowKeyInput(); // 今フレームのキー入力情報を保存
 

@@ -21,7 +21,6 @@ public class GameController : MonoBehaviour
         Start,
         InGame,
         Goal,
-        GameOver
     }
     /// <summary>
     /// ステージ名
@@ -64,14 +63,6 @@ public class GameController : MonoBehaviour
     {
         //ゲームの進行状況をゴールにする
         gameProgress = GameProgress.Goal;
-    }
-
-    /// <summary>
-    /// プレイヤーがゲームオーバー(失敗)条件を達成した時に呼び出される関数
-    /// </summary>
-    public void GameOver()
-    {
-        gameProgress = GameProgress.GameOver;
     }
 
     /// <summary>

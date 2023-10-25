@@ -32,6 +32,15 @@ public class GaugeController : MonoBehaviour
     void Update()   
     {
         // プレイヤーの状態が1(移動状態)なら
+        //if (playerController.GetPlayerCondition() == 1)
+        //{
+        //    slider.value = DefaultSliderValue - decreaseGauge * playerController.GetCurrentMoveCount(); // ゲージ(バリュー)を減らす
+        //}
+    }
+
+    private void FixedUpdate()
+    {
+        // プレイヤーの状態が1(移動状態)なら
         if (playerController.GetPlayerCondition() == 1)
         {
             slider.value = DefaultSliderValue - decreaseGauge * playerController.GetCurrentMoveCount(); // ゲージ(バリュー)を減らす
