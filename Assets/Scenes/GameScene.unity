@@ -596,6 +596,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mapGrid: {fileID: 910133630}
+  slider: {fileID: 1742119695}
   gameController: {fileID: 593007075}
   spriteMask: {fileID: 3046459893154276856, guid: 7a8f439806fa1fd43a6b77cd52256893, type: 3}
 --- !u!50 &1030537878
@@ -2087,7 +2088,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1742119694}
   - component: {fileID: 1742119695}
-  - component: {fileID: 1742119696}
   m_Layer: 5
   m_Name: Gauge
   m_TagString: Untagged
@@ -2168,21 +2168,6 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &1742119696
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1742119693}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f189c3749b7388342ab7ae18f687723d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  slider: {fileID: 1742119695}
-  playerController: {fileID: 1030537877}
-  gameController: {fileID: 593007075}
 --- !u!1 &1761521816
 GameObject:
   m_ObjectHideFlags: 0

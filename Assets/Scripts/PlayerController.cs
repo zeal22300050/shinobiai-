@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using static GameController;
 
 public class PlayerController : MonoBehaviour
@@ -32,6 +33,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private Grid mapGrid;
     /// <summary>
+    /// 残り手数表示用
+    /// </summary>
+    [SerializeField]
+    private Slider slider;
+    /// <summary>
     /// ステージ情報取得用
     /// </summary>
     [SerializeField]
@@ -42,6 +48,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private GameObject spriteMask;
 
+    private const float DefaultSliderValue = 1.0f; // スライダーの初期量
+
     private readonly List<GameObject> maskObject = new(); // スプライトマスクを保存しておく配列
 
     private Vector3 defaultPosition; // 初期位置
@@ -49,6 +57,7 @@ public class PlayerController : MonoBehaviour
     private Vector3 arrowKeyInput; // 矢印キーの入力を取得する変数
 
     private int moveCount; // 移動した回数を保存する変数
+    private float decreaseGauge; // 一回の移動で減るゲージの量
 
     private readonly List<Vector3> oldPosition = new(); // 過去の位置を保存する配列
     private int oldPositionIndex; // 任意の保存済み位置にアクセスするための変数
@@ -57,6 +66,9 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
+        slider.value = DefaultSliderValue;// 初期状態ではゲージを満タンにしておく
+        decreaseGauge = DefaultSliderValue / (float)gameController.GetMoveLimit(StageName.Stage1); // 移動回数の上限を取得する
+
         defaultPosition = transform.position;
         // 一回の移動距離をセルサイズに合わせる
         moveDistance = new Vector2(mapGrid.cellSize.x, mapGrid.cellSize.y);
@@ -71,6 +83,8 @@ public class PlayerController : MonoBehaviour
             transform.position = defaultPosition;
             // 移動回数の初期化
             moveCount = 0;
+            // ゲージの初期化
+            slider.value = DefaultSliderValue;
             // 配列がNULLならこれ以降の処理を行わない
             if (oldPosition == null || maskObject == null)
             {
@@ -123,6 +137,7 @@ public class PlayerController : MonoBehaviour
             if (ComparePosition() == CompareResult.Defferrent)
             {
                 moveCount++; // 移動回数を増やす
+                slider.value = DefaultSliderValue - decreaseGauge * moveCount; // ゲージを減らす
                 maskObject.Add(Instantiate(spriteMask, transform.position, Quaternion.identity)); // 足場を表示する
             }
         }
@@ -196,6 +211,8 @@ public class PlayerController : MonoBehaviour
         transform.position = oldPosition[--oldPositionIndex];
         // 壁に当たって動けなかったときは移動回数を増やさない
         moveCount--;
+        // ゲージに変更を適用する
+        slider.value = DefaultSliderValue - decreaseGauge * moveCount; 
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
