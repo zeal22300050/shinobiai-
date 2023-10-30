@@ -82,31 +82,10 @@ public class PlayerController : MonoBehaviour
             return; // これ以降の処理を行わない
         }
 
-        // リセットボタン処理
+        // リセットボタンが押されたら
         if (Input.GetKeyDown(KeyCode.R))
         {
-            // 現在位置の初期化
-            transform.position = defaultPosition;
-            // 移動回数の初期化
-            moveCount = 0;
-            // ゲージの初期化
-            slider.value = DefaultSliderValue;
-            // 配列がNULLならこれ以降の処理を行わない
-            if (oldPosition == null || maskObject == null)
-            {
-                return;
-            }
-            // maskオブジェクトをすべて削除する
-            for (int i = 0; i < maskObject.Count; i++)
-            {
-                Destroy(maskObject[i]);
-            }
-            // 保存された位置を削除する
-            oldPosition.Clear();
-            // 保存されたオブジェクト情報を削除する
-            maskObject.Clear();
-            // ゲーム進行状況をゲームスタート時に戻す
-            gameController.StartInGame();
+            ResetProcess(); // リセット処理を行う
         }
     }
 
@@ -210,6 +189,35 @@ public class PlayerController : MonoBehaviour
         // 上記の条件に当たらなければDefferrentを返す
         return CompareResult.Defferrent;
     } 
+
+    /// <summary>
+    /// リセット時の処理
+    /// </summary>
+    private void ResetProcess()
+    {
+        // 位置の初期化
+        transform.position = defaultPosition;
+        // 移動回数の初期化
+        moveCount = 0;
+        // ゲージの初期化
+        slider.value = DefaultSliderValue;
+        // 配列がNULLならこれ以降の処理を行わない
+        if (oldPosition == null || maskObject == null)
+        {
+            return;
+        }
+        // maskオブジェクトをすべて削除する
+        for (int i = 0; i < maskObject.Count; i++)
+        {
+            Destroy(maskObject[i]);
+        }
+        // 保存された位置を削除する
+        oldPosition.Clear();
+        // 保存されたオブジェクト情報を削除する
+        maskObject.Clear();
+        // ゲーム進行状況をゲームスタート時に戻す
+        gameController.StartInGame();
+    }
 
     // 衝突応答処理
     private void OnCollisionEnter2D(Collision2D collision)
