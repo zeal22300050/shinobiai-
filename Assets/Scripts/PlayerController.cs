@@ -63,13 +63,14 @@ public class PlayerController : MonoBehaviour
     private int oldPositionIndex; // 任意の保存済み位置にアクセスするための変数
     private bool oldFrameKeyInput; // 前フレームのキー入力を保存するフラグ
 
+    private int turnNumber = 1; // ターン数(初期値は1)
+
     // Start is called before the first frame update
     private void Start()
     {
         slider.value = DefaultSliderValue;// 初期状態ではゲージを満タンにしておく
-        decreaseGauge = DefaultSliderValue / (float)gameController.GetMoveLimit(StageName.Stage1); // 移動回数の上限を取得する
-
-        defaultPosition = transform.position;
+        decreaseGauge = DefaultSliderValue / (float)gameController.GetMoveLimit(StageName.Stage1); // 一回の移動で減るゲージ量を計算
+        defaultPosition = transform.position; // 初期位置の設定(後で位置取得などに変えたい)
         // 一回の移動距離をセルサイズに合わせる
         moveDistance = new Vector2(mapGrid.cellSize.x, mapGrid.cellSize.y);
     }
@@ -97,7 +98,7 @@ public class PlayerController : MonoBehaviour
             return; // これ以降の処理を行わない
         }
 
-        // 移動回数が移動上限を超えたら
+        // 移動回数が移動上限を超えていなければ
         if (moveCount < gameController.GetMoveLimit(StageName.Stage1))
         {
             // プレイヤーの移動処理を行う
@@ -117,8 +118,12 @@ public class PlayerController : MonoBehaviour
         if (oldFrameKeyInput == false && ArrowKeyInput())
         {
             playerCondition = PlayerCondition.Move; // 移動状態に移行
+
             oldPosition.Add(transform.position); // 現在の位置を保存する
             transform.position += arrowKeyInput; // 移動する
+
+            turnNumber++; // ターン数を増やす
+
             // 現在位置と保存済み位置が一致しなかったなら
             if (ComparePosition() == CompareResult.Defferrent)
             {
@@ -224,16 +229,23 @@ public class PlayerController : MonoBehaviour
     {
         // 一手前に保存された位置に戻る
         transform.position = oldPosition[--oldPositionIndex];
-        // 壁に当たって動けなかったときは移動回数を増やさない
+
+        // 壁に当たって動けなかったときは移動回数とターン数を増やさない
         moveCount--;
+        turnNumber--;
+
         // ゲージに変更を適用する
         slider.value = DefaultSliderValue - decreaseGauge * moveCount; 
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        // ゴール関数を呼び出す
-        gameController.Goal();
+        if (collision.gameObject.tag == "Goal")
+        {
+            // ゴール関数を呼び出す
+            gameController.Goal();
+        }
     }
+
     /// <summary>
     /// 現在の移動回数を返す関数
     /// </summary>
@@ -254,5 +266,14 @@ public class PlayerController : MonoBehaviour
     public int GetPlayerCondition()
     {
         return (int)playerCondition;
+    }
+
+    /// <summary>
+    /// 現在のターン数を返す関数
+    /// </summary>
+    /// <returns>現在のターン数</returns>
+    public int GetTurnNumber()
+    {
+        return turnNumber;
     }
 }

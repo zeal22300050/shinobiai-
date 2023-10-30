@@ -8,6 +8,8 @@ TagManager:
   - Map
   - Goal
   - Wall
+  - Enemy
+  - DengerZone
   layers:
   - Default
   - TransparentFX

@@ -83,7 +83,7 @@ public class GameController : MonoBehaviour
     /// <summary>
     /// 受け取った番号に対応したステージの移動回数上限を取得する
     /// </summary>
-    /// <param name="stageNames"> ステージ番号 </param>
+    /// <param name="stageNames"> ステージ名 </param>
     /// <returns> 移動回数上限 </returns>
     public int GetMoveLimit(StageName stageNames)
     {
