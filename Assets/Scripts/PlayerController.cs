@@ -76,6 +76,12 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        // ゴールしたら
+        if (gameController.GetGameProgress() == GameProgress.Goal)
+        {
+            return; // これ以降の処理を行わない
+        }
+
         // リセットボタン処理
         if (Input.GetKeyDown(KeyCode.R))
         {
@@ -106,6 +112,7 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        // ゴールしたら
         if (gameController.GetGameProgress() == GameProgress.Goal)
         {
             return; // これ以降の処理を行わない
