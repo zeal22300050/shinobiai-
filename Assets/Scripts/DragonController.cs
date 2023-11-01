@@ -25,9 +25,16 @@ public class DragonController : MonoBehaviour
     {
         // コンポーネントの取得
         spriteRenderer = GetComponent<SpriteRenderer>();
+        // パターン1を有効化、パターン2を無効化
+        zonePattern1.SetActive(true);
+        zonePattern2.SetActive(false);
     }
 
     private void FixedUpdate()
+    {
+    }
+
+    public void ActionDragon()
     {
         // 現在のターン数が偶数なら
         if (playerController.GetTurnNumber() % 2 == 0)
@@ -46,5 +53,6 @@ public class DragonController : MonoBehaviour
 
             spriteRenderer.flipX = false; // そのまま
         }
+
     }
 }

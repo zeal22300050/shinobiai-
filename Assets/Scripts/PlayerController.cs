@@ -41,7 +41,12 @@ public class PlayerController : MonoBehaviour
     /// ステージ情報取得用
     /// </summary>
     [SerializeField]
-    private GameController gameController; 
+    private GameController gameController;
+    /// <summary>
+    /// 龍の情報取得用
+    /// </summary>
+    [SerializeField]
+    private DragonController dragonController;
     /// <summary>
     /// 足場表示用スプライトマスク
     /// </summary>
@@ -92,8 +97,8 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // ゴールしたら
-        if (gameController.GetGameProgress() == GameProgress.Goal)
+        // ゴールまたはゲームオーバーになったら
+        if (gameController.GetGameProgress() == GameProgress.Goal || gameController.GetGameProgress() == GameProgress.GameOver)
         {
             return; // これ以降の処理を行わない
         }
@@ -117,12 +122,15 @@ public class PlayerController : MonoBehaviour
         // 前フレームでキーが押されていないかつ今フレームでキーが押されていたら
         if (oldFrameKeyInput == false && ArrowKeyInput())
         {
+            turnNumber++; // ターン数を増やす
+
+            dragonController.ActionDragon(); // 敵の行動
+
             playerCondition = PlayerCondition.Move; // 移動状態に移行
 
             oldPosition.Add(transform.position); // 現在の位置を保存する
             transform.position += arrowKeyInput; // 移動する
 
-            turnNumber++; // ターン数を増やす
 
             // 現在位置と保存済み位置が一致しなかったなら
             if (ComparePosition() == CompareResult.Defferrent)
@@ -234,6 +242,8 @@ public class PlayerController : MonoBehaviour
         moveCount--;
         turnNumber--;
 
+        dragonController.ActionDragon(); // 敵の行動に変更を適用する
+
         // ゲージに変更を適用する
         slider.value = DefaultSliderValue - decreaseGauge * moveCount; 
     }
@@ -243,6 +253,11 @@ public class PlayerController : MonoBehaviour
         {
             // ゴール関数を呼び出す
             gameController.Goal();
+        }
+
+        if (collision.gameObject.tag == "DengerZone")
+        {
+            gameController.GameOver();
         }
     }
 

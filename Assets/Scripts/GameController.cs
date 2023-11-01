@@ -21,6 +21,7 @@ public class GameController : MonoBehaviour
         Start,
         InGame,
         Goal,
+        GameOver
     }
     /// <summary>
     /// ステージ名
@@ -63,6 +64,11 @@ public class GameController : MonoBehaviour
     {
         //ゲームの進行状況をゴールにする
         gameProgress = GameProgress.Goal;
+    }
+
+    public void GameOver()
+    {
+        gameProgress = GameProgress.GameOver;
     }
 
     /// <summary>
