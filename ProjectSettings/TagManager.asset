@@ -4,12 +4,12 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Start
-  - Map
+  - Rabit
+  - Dragon
+  - Sheep
   - Goal
-  - Wall
-  - Enemy
-  - DengerZone
+  - Start
+  - StageSE
   layers:
   - Default
   - TransparentFX
@@ -17,8 +17,8 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
+  - scaffold
+  - startGoal
   - 
   - 
   - 

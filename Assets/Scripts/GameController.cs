@@ -1,98 +1,156 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
-    /// <summary>
-    /// ステージ名
-    /// </summary>
-    public enum StageName
-    {
-        Stage1,
-        Stage2,
-        Stage3,
-    }
-    /// <summary>
-    /// ゲームの進行状況
-    /// </summary>
+    [HideInInspector]
     public enum GameProgress
     {
-        Start,
-        InGame,
-        Goal,
-        GameOver
-    }
-    /// <summary>
-    /// ステージ名
-    /// </summary>
-    private StageName stageName;
-
-    /// <summary>
-    /// ゲームの進行状況
-    /// </summary>
-    private GameProgress gameProgress;
-
-    /// <summary>
-    /// ステージごとの移動回数上限を保存する変数
-    /// </summary>
-    private readonly Dictionary<StageName, int> moveLimit = new(){
-        {StageName.Stage1, 10},
-        {StageName.Stage2, 8},
-        {StageName.Stage3, 6},
+        start,
+        playing,
+        goal,
+        gameover,
+        result,
     };
 
-    private void Start()
+    public GameProgress gameProgress { get; private set; }
+
+    //フェードアウト用のimageの取得
+    public Image fadeOutPanel;
+
+    //フェードにかかる時間
+    public float fadeOutElapsedTime;
+
+    //フェードが始まるまでにかかる時間
+    public float fadeStartTime;
+
+    public bool fadeStart = false;
+
+    public bool isChengeTurn { get; private set; }
+
+    public bool isBackTitle { private get; set; }
+
+    // Start is called before the first frame update
+    void Start()
     {
-        // 最初はゲーム中状態
-        gameProgress = GameProgress.Start;
+        // ゲームの進行状態をstartにする
+        gameProgress = GameProgress.start;
+        isChengeTurn = false;
+        isBackTitle = false;
+
+        fadeOutPanel.enabled = false;
+    }
+
+    private void FixedUpdate()
+    {
+        GameProgressState();
+    }
+
+    private void GameProgressState()
+    {
+        switch (gameProgress)
+        {
+            case GameProgress.start:
+                gameProgress = GameProgress.playing;
+                break;
+
+            case GameProgress.playing:
+                break;
+
+            case GameProgress.goal:
+                if(SceneManager.GetActiveScene().name == "GameScene" && !fadeStart)
+                {
+                    StartCoroutine(FadeOutAndLoadScene());
+                    fadeStart = true;
+                    fadeOutPanel.enabled = true;
+                }
+                break;
+
+            case GameProgress.gameover:
+                break;
+
+            case GameProgress.result:
+                break;
+        }
     }
 
     /// <summary>
-    /// 進行状況をゲーム中にする時に呼ばれる関数
+    /// ゲームの進行状態を変更する関数
     /// </summary>
-    public void StartInGame()
+    public void SetGameProgress(GameProgress progress)
     {
-        // 進行状況をゲーム中に戻す
-        gameProgress = GameProgress.InGame;
+        gameProgress = progress;
     }
 
     /// <summary>
-    ///  プレイヤーがゴールした時に呼び出される関数
+    /// ゲームが終わったかどうか確認する関数
     /// </summary>
-    public void Goal()
+    public bool GameEnd()
     {
-        //ゲームの進行状況をゴールにする
-        gameProgress = GameProgress.Goal;
+        // ゲームの進行状態がクリアorゲームオーバーならtrue
+        return
+        gameProgress == GameProgress.goal ||
+        gameProgress == GameProgress.gameover;
     }
 
-    public void GameOver()
+    public void TurnStart()
     {
-        gameProgress = GameProgress.GameOver;
+        isChengeTurn = true;
+    }
+
+    public void TurnEnd()
+    {
+        isChengeTurn = false;
     }
 
     /// <summary>
-    /// ゲームの進行状況を取得する関数
+    /// タイトルボタンが押されたら実行する関数
     /// </summary>
-    /// <returns> ゲーム進行状況 </returns>
-    public GameProgress GetGameProgress()
+    public void PushTitleButton()
     {
-        return gameProgress;
-    }
-
-    // ステージ名を取得する関数
-    public StageName GetStageName()
-    {
-        return stageName;
+        if (gameProgress == GameProgress.gameover || gameProgress == GameProgress.goal || gameProgress == GameProgress.result)
+        {
+            // タイトルシーンを読み込む
+            SceneManager.LoadScene("TitleScene");
+        }
     }
 
     /// <summary>
-    /// 受け取った番号に対応したステージの移動回数上限を取得する
+    /// リトライボタンが押されたら実行する関数
     /// </summary>
-    /// <param name="stageNames"> ステージ名 </param>
-    /// <returns> 移動回数上限 </returns>
-    public int GetMoveLimit(StageName stageNames)
+    public void PushRetryButton()
     {
-        return moveLimit[stageNames]; // 移動回数上限を返す
+        if (gameProgress == GameProgress.gameover)
+        {
+            // ゲームシーンを読み込む
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
     }
+    private void BackTitle()
+    {
+        SceneManager.LoadScene("TitleScene");
+    }
+
+    //呼ばれたらフェードアウトとシーンの切り替えをする関数
+    public IEnumerator FadeOutAndLoadScene()
+    {
+        float elasedTime = 0.0f;
+        Color startColor = fadeOutPanel.color;
+        Color endColor = new Color(startColor.r, startColor.g, startColor.b, 1.0f);
+
+        yield return new WaitForSeconds(fadeStartTime);
+
+        while (elasedTime < fadeOutElapsedTime)
+        {
+            elasedTime += Time.deltaTime;
+            float alfa = Mathf.Clamp01(elasedTime / fadeOutElapsedTime);
+            fadeOutPanel.color = Color.Lerp(startColor, endColor, alfa);
+            yield return null;
+        }
+        fadeOutPanel.color = endColor;
+        SceneManager.LoadScene("TitleScene");
+    }
+
 }
